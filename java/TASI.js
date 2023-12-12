@@ -14,7 +14,7 @@ function init() {
             //Remove additional text and extract only JSON:
             const jsonData = JSON.parse(rep.substring(47).slice(0, -2));
             console.log(rep)
-            const colz = ["Symbol", "Risk", "Price", "Multiple"]; // Specific column names
+            const colz = ["Symbol", "Risk", "Price", "Percentage"]; // Specific column names
             const tr = document.createElement('tr');
             //Create table headers
             colz.forEach((column) => {
@@ -34,6 +34,23 @@ function init() {
             processRows(data);
         })
 }
+let minRisk = 0.001;
+let maxRisk = 0.999;
+let minMultiple = 3;
+let maxMultiple = 5;
+
+function getColor(value, type) {
+    let hue;
+    if (type === 'risk') {
+        value = (value - minRisk) / (maxRisk - minRisk);
+        hue = 120 - value * 120;
+    } else if (type === 'multiples') {
+        value = (value - minMultiple) / (maxMultiple - minMultiple);
+        hue = value * 120;
+    }
+    return `hsl(${hue}, 100%, 35%)`;
+}
+
 
 function getColor(value, type) {
     let hue;
@@ -44,7 +61,7 @@ function getColor(value, type) {
     } else if (type === 'multiples') {
         value = (value - minMultiple) / (maxMultiple - minMultiple);
         // Interpolate between red (0) and green (120)
-        hue = value * 120;
+        hue = value * 600;
     }
     return `hsl(${hue}, 90%, 20%)`; // Saturation is 100, lightness is 35%
 }
@@ -80,14 +97,15 @@ function processRows(json) {
                     td.style.backgroundColor = getColor(value, 'risk');
                     td.textContent = value;
                 } else if (columnIndex === 2) {
-                    if (value < 1) {
+                    if (value < 400) {
                         value = value.toFixed(2);
                     } else {
                         value = value.toFixed(0);
                     }
                     td.textContent = value;
                 } else if (columnIndex === 3) {
-                    let formattedValue = value.toFixed(0) + 'x';
+                    value = parseFloat(value);
+                    let formattedValue = (value * 100).toFixed(0) + '%'; // Convert to percentage
                     td.style.backgroundColor = getColor(value, 'multiples');
                     td.textContent = formattedValue;
                 } else {
@@ -98,5 +116,4 @@ function processRows(json) {
             output.appendChild(tr);
         }
     })
-}
-
+}    
