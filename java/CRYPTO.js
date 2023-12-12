@@ -34,8 +34,10 @@ function init() {
             processRows(data);
         })
 }
-let minRisk = Infinity, maxRisk = -Infinity;
-let minMultiple = Infinity, maxMultiple = -Infinity;
+let minRisk = 0.001;
+let maxRisk = 0.999;
+let minMultiple = 3;
+let maxMultiple = 5;
 
 function getColor(value, type) {
     let hue;
