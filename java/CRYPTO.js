@@ -38,15 +38,17 @@ let minRisk = Infinity, maxRisk = -Infinity;
 let minMultiple = Infinity, maxMultiple = -Infinity;
 
 function getColor(value, type) {
-    let saturation;
+    let hue;
     if (type === 'risk') {
         value = (value - minRisk) / (maxRisk - minRisk);
-        saturation = 100 - value * 100;
+        // Interpolate between red (0) and green (120)
+        hue = 120 - value * 120;
     } else if (type === 'multiples') {
         value = (value - minMultiple) / (maxMultiple - minMultiple);
-        saturation = value * 100;
+        // Interpolate between red (0) and green (120)
+        hue = value * 120;
     }
-    return `hsl(100, ${saturation}%, 20%)`;
+    return `hsl(${hue}, 90%, 20%)`; // Saturation is 100, lightness is 35%
 }
 
 function processRows(json) {
