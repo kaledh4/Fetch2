@@ -34,40 +34,61 @@ function init() {
             processRows(data);
         })
 }
+let minRisk = Infinity, maxRisk = -Infinity;
+let minMultiple = Infinity, maxMultiple = -Infinity;
 
-function getColor(value) {
-    let hue;
-    if (value < 0.5) {
-        hue = 120 - value * 120; // Green for values less than 0.5
-    } else {
-        hue = 120 - value * 240; // Red for values greater than or equal to 0.5
+function getColor(value, type) {
+    let saturation;
+    if (type === 'risk') {
+        value = (value - minRisk) / (maxRisk - minRisk);
+        saturation = 100 - value * 100;
+    } else if (type === 'multiples') {
+        value = (value - minMultiple) / (maxMultiple - minMultiple);
+        saturation = value * 100;
     }
-    return `hsl(${hue}, 100%, 90%)`; // Saturation is 100%, lightness is 90%
+    return `hsl(100, ${saturation}%, 20%)`;
 }
 
 function processRows(json) {
+    // Calculate min and max for risk and multiples
     json.forEach((row, rowIndex) => {
-        if (rowIndex < 6) { // Only process the first 8 rows
+        if (rowIndex < 6) {
+            const keys = Object.keys(row);
+            keys.forEach((key, columnIndex) => {
+                let value = parseFloat(row[key]);
+                if (columnIndex === 1) { // Risk
+                    minRisk = Math.min(minRisk, value);
+                    maxRisk = Math.max(maxRisk, value);
+                } else if (columnIndex === 3) { // Multiples
+                    minMultiple = Math.min(minMultiple, value);
+                    maxMultiple = Math.max(maxMultiple, value);
+                }
+            });
+        }
+    });
+
+    // Process rows
+    json.forEach((row, rowIndex) => {
+        if (rowIndex < 6) {
             const tr = document.createElement('tr');
             const keys = Object.keys(row);
-
             keys.forEach((key, columnIndex) => {
                 const td = document.createElement('td');
                 let value = row[key];
-                if (columnIndex === 1) { // Column 2 (0-indexed)
-                    value = parseFloat(value).toFixed(3); // Format as 0.000
-                    td.style.backgroundColor = getColor(value);
+                if (columnIndex === 1) {
+                    value = parseFloat(value).toFixed(3);
+                    td.style.backgroundColor = getColor(value, 'risk');
                     td.textContent = value;
-                } else if (columnIndex === 2) { // Column 3 (0-indexed)
-                    if (value < 1) { // If value is less than 1
-                        value = value.toFixed(2); // Show two decimal points
+                } else if (columnIndex === 2) {
+                    if (value < 1) {
+                        value = value.toFixed(2);
                     } else {
-                        value = value.toFixed(0); // Else show as integer
+                        value = value.toFixed(0);
                     }
                     td.textContent = value;
-                } else if (columnIndex === 3) { // Column 4 (0-indexed)
-                    let formattedValue = value.toFixed(0) + 'x'; // Format as integer
-                    td.style.backgroundColor = getColor(value);
+                } else if (columnIndex === 3) {
+                    let formattedValue = value.toFixed(0) + 'x';
+                    td.style.backgroundColor = getColor(value, 'multiples');
                     td.textContent = formattedValue;
                 } else {
                     td.textContent = value;
@@ -78,4 +99,3 @@ function processRows(json) {
         }
     })
 }
-
