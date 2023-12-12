@@ -35,35 +35,60 @@ function init() {
         })
 }
 
-function getColor(value) {
+function getColor(value, type) {
     let hue;
-    if (value < 0) {
-        hue = 120; // Green for negative values
-    } else if (value <= 100) {
-        hue = 120 - value * 1.2; // Hue goes from 120 (green) to 0 (red) through 60 (white)
-    } else {
-        hue = 0; // Red for values above 100
+    if (type === 'risk') {
+        value = (value - minRisk) / (maxRisk - minRisk);
+        // Interpolate between red (0) and green (120)
+        hue = 120 - value * 120;
+    } else if (type === 'multiples') {
+        value = (value - minMultiple) / (maxMultiple - minMultiple);
+        // Interpolate between red (0) and green (120)
+        hue = value * 120;
     }
-    return `hsl(${hue}, 100%, 90%)`; // Saturation is 100%, lightness is 90%
+    return `hsl(${hue}, 90%, 20%)`; // Saturation is 100, lightness is 35%
 }
 
 function processRows(json) {
+    // Calculate min and max for risk and multiples
     json.forEach((row, rowIndex) => {
-        if (rowIndex < 6) { // Only process the first 8 rows
+        if (rowIndex < 6) {
+            const keys = Object.keys(row);
+            keys.forEach((key, columnIndex) => {
+                let value = parseFloat(row[key]);
+                if (columnIndex === 1) { // Risk
+                    minRisk = Math.min(minRisk, value);
+                    maxRisk = Math.max(maxRisk, value);
+                } else if (columnIndex === 3) { // Multiples
+                    minMultiple = Math.min(minMultiple, value);
+                    maxMultiple = Math.max(maxMultiple, value);
+                }
+            });
+        }
+    });
+
+    // Process rows
+    json.forEach((row, rowIndex) => {
+        if (rowIndex < 6) {
             const tr = document.createElement('tr');
             const keys = Object.keys(row);
-
             keys.forEach((key, columnIndex) => {
                 const td = document.createElement('td');
                 let value = row[key];
-                if (columnIndex === 1) { // Column 2 (0-indexed)
-                    value = parseFloat(value).toFixed(3); // Format as 0.000
-                    td.style.backgroundColor = getColor(value);
+                if (columnIndex === 1) {
+                    value = parseFloat(value).toFixed(3);
+                    td.style.backgroundColor = getColor(value, 'risk');
                     td.textContent = value;
-                } else if (columnIndex === 3) { // Column 4 (0-indexed)
-                    value = parseFloat(value) * 100; // Convert to percentage
-                    let formattedValue = value.toFixed(0) + '%'; // Format as percentage with two decimal places
-                    td.style.backgroundColor = getColor(value);
+                } else if (columnIndex === 2) {
+                    if (value < 1) {
+                        value = value.toFixed(2);
+                    } else {
+                        value = value.toFixed(0);
+                    }
+                    td.textContent = value;
+                } else if (columnIndex === 3) {
+                    let formattedValue = value.toFixed(0) + 'x';
+                    td.style.backgroundColor = getColor(value, 'multiples');
                     td.textContent = formattedValue;
                 } else {
                     td.textContent = value;
