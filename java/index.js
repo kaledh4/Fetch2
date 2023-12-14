@@ -1,7 +1,7 @@
 const sheetId = '1IV_roEtzjbfVRh9YaLfW0fBZmNZjdZ_KRYiPHwMXCj4';
 const base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`;
 const sheetName = 'Economy';
-const query = encodeURIComponent('Select B, C, D, E') // Changed from 'Select *'
+const query = encodeURIComponent('Select A, B, C, D') // Changed from 'Select B, C, D, E'
 const url = `${base}&sheet=${sheetName}&tq=${query}`
 const data = []
 document.addEventListener('DOMContentLoaded', init)
@@ -14,7 +14,7 @@ function init() {
             //Remove additional text and extract only JSON:
             const jsonData = JSON.parse(rep.substring(47).slice(0, -2));
             console.log(rep)
-            const colz = ["Symbol", "Risk", "Price", "Multiple"]; // Specific column names
+            const colz = ["Unemployment Rate", "Headline Inflation", "Fed's Intrest Rate", "Dollar Index"]; // Specific column names
             const tr = document.createElement('tr');
             //Create table headers
             colz.forEach((column) => {
