@@ -29,4 +29,5 @@ th, td {
 tr[data-crypto], tr[data-crypto2] {
     background-color: #222222; 
     color: #141414; 
+    width: fit-content;
 }
