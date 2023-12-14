@@ -14,7 +14,6 @@ table {
     width: 50vh;
     border-collapse: collapse;
     margin: 0 auto; /* Center the table horizontally */
-    display: inline-table; /* Add this line */
 }
 
 table, th, td {
