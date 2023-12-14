@@ -41,4 +41,3 @@ function processRows(data) {
         output.appendChild(tr);
     });
 }
-
