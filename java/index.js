@@ -29,15 +29,19 @@ function init() {
 
 function processRows(data) {
     data.forEach((row) => {
-        const tr = document.createElement('tr');
         for (const key in row) {
+            const table = document.createElement('table');
+            const tr = document.createElement('tr');
             const th = document.createElement('th');
             th.innerText = key;
             tr.appendChild(th);
             const td = document.createElement('td');
             td.innerText = row[key];
             tr.appendChild(td);
+            table.appendChild(tr);
+            output.appendChild(table);
         }
-        output.appendChild(tr);
+        const br = document.createElement('br');
+        output.appendChild(br);
     });
 }
