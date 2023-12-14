@@ -14,15 +14,7 @@ function init() {
             //Remove additional text and extract only JSON:
             const jsonData = JSON.parse(rep.substring(47).slice(0, -2));
             console.log(rep)
-            const colz = ["Unemployment Rate", "Headline Inflation", "Fed's Intrest Rate", "Dollar Index"]; // Specific column names
-            const tr = document.createElement('tr');
-            //Create table headers
-            colz.forEach((column) => {
-                const th = document.createElement('th');
-                th.innerText = column;
-                tr.appendChild(th);
-            })
-            output.appendChild(tr);
+            const colz = ["Unemployment Rate", "Headline Inflation", "Fed's Interest Rate", "Dollar Index"]; // Specific column names
             //extract row data:
             jsonData.table.rows.forEach((rowData) => {
                 const row = {};
@@ -34,3 +26,19 @@ function init() {
             processRows(data);
         })
 }
+
+function processRows(data) {
+    data.forEach((row) => {
+        const tr = document.createElement('tr');
+        for (const key in row) {
+            const th = document.createElement('th');
+            th.innerText = key;
+            tr.appendChild(th);
+            const td = document.createElement('td');
+            td.innerText = row[key];
+            tr.appendChild(td);
+        }
+        output.appendChild(tr);
+    });
+}
+
