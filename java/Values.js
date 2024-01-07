@@ -1,36 +1,58 @@
 const sheetId = '1IV_roEtzjbfVRh9YaLfW0fBZmNZjdZ_KRYiPHwMXCj4';
 const base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`;
 const sheetName = 'Values';
-const query = encodeURIComponent('Select A, B, C, D, E, F, G, H, I, J, K limit 18');
-const url = `${base}&sheet=${sheetName}&tq=${query}`
-const data = []
-document.addEventListener('DOMContentLoaded', init)
-const output = document.querySelector('.output')
+const query = encodeURIComponent('SELECT A, B, C, D, E, F, G, H, I, J, K LIMIT 18');
+const url = `${base}&sheet=${sheetName}&tq=${query}`;
+const data = [];
+const output = document.querySelector('.output');
+
+document.addEventListener('DOMContentLoaded', init);
 
 function init() {
     fetch(url)
         .then(res => res.text())
         .then(rep => {
-            //Remove additional text and extract only JSON:
+            // Remove additional text and extract only JSON:
             const jsonData = JSON.parse(rep.substring(47).slice(0, -2));
-            console.log(rep)
+
             const colz = ["Symbol", "Risk", "Price", "Multiple", "1", "2", "3", "4", "5"]; // Specific column names
-            const tr = document.createElement('tr');
-            //Create table headers
-            colz.forEach((column) => {
-                const th = document.createElement('th');
-                th.innerText = column;
-                tr.appendChild(th);
-            })
-            output.appendChild(tr);
-            //extract row data:
+            createTableHeaders(colz);
+
+            // Extract row data and process rows
             jsonData.table.rows.forEach((rowData) => {
                 const row = {};
-                colz.forEach((ele, ind) => {
-                    row[ele] = (rowData.c[ind] != null) ? rowData.c[ind].v : '';
-                })
+                rowData.c.forEach((cell, ind) => {
+                    row[colz[ind]] = (cell != null) ? cell.v : '';
+                });
                 data.push(row);
-            })
+            });
+
             processRows(data);
         })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+}
+
+function createTableHeaders(columns) {
+    const tr = document.createElement('tr');
+    // Create table headers
+    columns.forEach((column) => {
+        const th = document.createElement('th');
+        th.innerText = column;
+        tr.appendChild(th);
+    });
+    output.appendChild(tr);
+}
+
+function processRows(rowsData) {
+    rowsData.forEach((rowData) => {
+        const tr = document.createElement('tr');
+        Object.values(rowData).forEach((value) => {
+            const td = document.createElement('td');
+            td.innerText = value;
+            tr.appendChild(td);
+        });
+        output.appendChild(tr);
+    });
 }
