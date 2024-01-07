@@ -10,25 +10,25 @@ document.addEventListener('DOMContentLoaded', init);
 
 function init() {
     fetch(url)
-        .then(res => res.text())
-        .then(rep => {
-            // Remove additional text and extract only JSON:
-            const jsonData = JSON.parse(rep.substring(47).slice(0, -2));
+       .then(rep => {
+    // Remove additional text and extract only JSON:
+    const jsonData = JSON.parse(rep.substring(47).slice(0, -2));
+    console.log(jsonData); // Log the entire jsonData object to the console
 
-            const colz = ["Symbol", "Risk", "Price", "Multiple", "1", "2", "3", "4", "5"]; // Specific column names
-            createTableHeaders(colz);
+    const colz = ["Symbol", "Risk", "Price", "Multiple", "1", "2", "3", "4", "5"]; // Specific column names
+    createTableHeaders(colz);
 
-            // Extract row data and process rows
-            jsonData.table.rows.forEach((rowData) => {
-                const row = {};
-                rowData.c.forEach((cell, ind) => {
-                    row[colz[ind]] = (cell != null) ? cell.v : '';
-                });
-                data.push(row);
-            });
+    // Extract row data and process rows
+    jsonData.table.rows.forEach((rowData) => {
+        const row = {};
+        rowData.c.forEach((cell, ind) => {
+            row[colz[ind]] = (cell != null) ? cell.v : '';
+        });
+        data.push(row);
+    });
 
-            processRows(data);
-        })
+    processRows(data);
+})
         .catch(error => {
             console.error('Error fetching data:', error);
         });
@@ -56,3 +56,5 @@ function processRows(rowsData) {
         output.appendChild(tr);
     });
 }
+
+
