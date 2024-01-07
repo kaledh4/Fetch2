@@ -1,7 +1,7 @@
 const sheetId = '1IV_roEtzjbfVRh9YaLfW0fBZmNZjdZ_KRYiPHwMXCj4';
 const base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`;
 const sheetName = 'Values';
-const query = encodeURIComponent('Select A, B, C, D, E, F, G, H, I, J, K') // Changed from 'Select *'
+const query = encodeURIComponent('Select A, B, C, D, E, F, G, H, I, J, K limit 18');
 const url = `${base}&sheet=${sheetName}&tq=${query}`
 const data = []
 document.addEventListener('DOMContentLoaded', init)
